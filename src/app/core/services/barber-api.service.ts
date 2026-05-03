@@ -20,10 +20,10 @@ export class BarberApiService {
     return this.http.get<BarberPublic>(`${this.API}/public/barbers/${id}`);
   }
 
-  getAvailableSlots(barberId: number, date: string, serviceId?: number): Observable<string[]> {
+  getAvailableSlots(userCentreSoinId: number, date: string, serviceId?: number): Observable<string[]> {
     const params: any = { date };
     if (serviceId) params['serviceId'] = serviceId;
-    return this.http.get<string[]>(`${this.API}/public/barbers/${barberId}/slots`, { params });
+    return this.http.get<string[]>(`${this.API}/public/barbers/${userCentreSoinId}/slots`, { params });
   }
 
   // Barber profile management

@@ -22,7 +22,7 @@ export interface QueuePosition {
 }
 
 export interface BookAppointmentRequest {
-  barberId: number;
+  userCentreSoinId: number;
   serviceId: number;
   startTime: string;
   notes?: string;

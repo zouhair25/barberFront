@@ -7,7 +7,7 @@ import { AppointmentApiService } from '../../../core/services/appointment-api.se
 import { AuthService } from '../../../core/services/auth.service';
 import { BarberPublic, BarberServicePublic } from '../../../core/models/barber.model';
 import { format, addDays } from 'date-fns';
-import { fr } from 'date-fns/locale';
+import { fr, th } from 'date-fns/locale';
 
 @Component({
   selector: 'app-barber-detail',
@@ -173,6 +173,7 @@ export class BarberDetailComponent implements OnInit {
   }
 
   ngOnInit() {
+    console.log('barber',this.barber)
     const id = Number(this.route.snapshot.paramMap.get('id'));
     this.barberApi.getBarber(id).subscribe(b => this.barber.set(b));
     this.selectedDate.set(this.next7Days[0]);
@@ -190,8 +191,8 @@ export class BarberDetailComponent implements OnInit {
 
   loadSlots() {
     this.slotsLoading.set(true);
-    const barberId = this.barber()!.id;
-    this.barberApi.getAvailableSlots(barberId, this.selectedDate(), this.selectedService()?.id).subscribe({
+    const userCentreSoinId = this.barber()!.id;
+    this.barberApi.getAvailableSlots(userCentreSoinId, this.selectedDate(), this.selectedService()?.id).subscribe({
       next: slots => { this.slots.set(slots); this.slotsLoading.set(false); },
       error: () => { this.slots.set([]); this.slotsLoading.set(false); }
     });
@@ -201,7 +202,7 @@ export class BarberDetailComponent implements OnInit {
     if (!this.selectedSlot() || !this.selectedService()) return;
     this.booking.set(true);
     this.appointmentApi.book({
-      barberId: this.barber()!.id,
+      userCentreSoinId: this.barber()!.id,
       serviceId: this.selectedService()!.id,
       startTime: this.selectedSlot()!,
       notes: this.notes

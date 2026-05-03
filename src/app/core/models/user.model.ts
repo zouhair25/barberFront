@@ -18,5 +18,5 @@ export interface AuthResponse {
   firstName: string;
   lastName: string;
   role: Role;
-  barberId?: number;
+  userCentreSoinId?: number;
 }

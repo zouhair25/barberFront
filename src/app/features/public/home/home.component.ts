@@ -8,81 +8,8 @@ import { BarberPublic } from '../../../core/models/barber.model';
   selector: 'app-home',
   standalone: true,
   imports: [CommonModule, RouterLink],
-  template: `
-    <div class="min-h-screen bg-gradient-to-br from-indigo-50 to-white">
-      <!-- Hero -->
-      <div class="bg-indigo-700 text-white py-16 px-4">
-        <div class="max-w-3xl mx-auto text-center">
-          <h1 class="text-4xl font-bold mb-4">Réservez votre coiffeur en ligne</h1>
-          <p class="text-xl text-indigo-200 mb-8">Voyez la disponibilité en temps réel, réservez en quelques clics</p>
-          <div class="relative max-w-md mx-auto">
-            <input type="text" placeholder="Rechercher un coiffeur, ville..."
-                   class="w-full px-5 py-3 rounded-full text-gray-800 text-lg shadow-lg outline-none"
-                   [(ngModel)]="searchQuery" (input)="filter()" />
-          </div>
-        </div>
-      </div>
-
-      <!-- Barbers list -->
-      <div class="max-w-7xl mx-auto px-4 py-10">
-        <h2 class="text-2xl font-bold text-gray-800 mb-6">Nos Coiffeurs</h2>
-
-        @if (loading()) {
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            @for (i of [1,2,3,4,5,6]; track i) {
-              <div class="card animate-pulse">
-                <div class="h-4 bg-gray-200 rounded mb-3 w-3/4"></div>
-                <div class="h-3 bg-gray-100 rounded mb-2"></div>
-                <div class="h-3 bg-gray-100 rounded w-1/2"></div>
-              </div>
-            }
-          </div>
-        } @else {
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            @for (barber of filteredBarbers(); track barber.id) {
-              <a [routerLink]="['/barber', barber.id]"
-                 class="card hover:shadow-md hover:-translate-y-1 transition-all cursor-pointer block">
-                <div class="flex justify-between items-start mb-3">
-                  <div>
-                    <h3 class="font-bold text-lg text-gray-800">{{ barber.shopName }}</h3>
-                    @if (barber.city) {
-                      <p class="text-gray-500 text-sm">📍 {{ barber.city }}</p>
-                    }
-                  </div>
-                  <!-- Queue badge -->
-                  <span [class]="barber.queueCount === 0 ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'"
-                        class="text-xs font-bold px-3 py-1 rounded-full">
-                    {{ barber.queueCount === 0 ? 'Disponible' : barber.queueCount + ' en attente' }}
-                  </span>
-                </div>
-
-                @if (barber.bio) {
-                  <p class="text-gray-600 text-sm mb-3 line-clamp-2">{{ barber.bio }}</p>
-                }
-
-                <div class="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
-                  @if (barber.averageRating) {
-                    <div class="flex items-center gap-1 text-amber-500">
-                      <span class="text-sm font-bold">★ {{ barber.averageRating | number:'1.1-1' }}</span>
-                      <span class="text-gray-400 text-xs">({{ barber.reviewCount }})</span>
-                    </div>
-                  }
-                  <span class="text-indigo-600 text-sm font-medium">Réserver →</span>
-                </div>
-              </a>
-            }
-          </div>
-
-          @if (filteredBarbers().length === 0) {
-            <div class="text-center py-16 text-gray-500">
-              <p class="text-4xl mb-4">✂️</p>
-              <p class="text-xl">Aucun coiffeur trouvé</p>
-            </div>
-          }
-        }
-      </div>
-    </div>
-  `
+  templateUrl: './home.component.html'
+  
 })
 export class HomeComponent implements OnInit {
   barbers = signal<BarberPublic[]>([]);
