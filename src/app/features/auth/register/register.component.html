@@ -6,12 +6,12 @@
 
           <!-- Role selector -->
           <div class="flex gap-3 mb-6">
-            <button type="button" (click)="role = 'USER'"
+            <button type="button" (click)="userForm.get('role')?.setValue('USER')"
                     [class]="role === 'USER' ? 'border-indigo-500 bg-indigo-50 text-indigo-700' : 'border-gray-200 text-gray-600'"
                     class="flex-1 py-3 border-2 rounded-xl font-medium transition-colors">
               👤 Client
             </button>
-            <button type="button" (click)="role = 'BARBER'"
+            <button type="button" (click)="userForm.get('role')?.setValue('BARBER')"
                     [class]="role === 'BARBER' ? 'border-indigo-500 bg-indigo-50 text-indigo-700' : 'border-gray-200 text-gray-600'"
                     class="flex-1 py-3 border-2 rounded-xl font-medium transition-colors">
               ✂️ Coiffeur

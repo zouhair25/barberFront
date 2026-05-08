@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink, Router } from '@angular/router';
@@ -11,7 +11,7 @@ import { TextComponent } from '@shared/components/inputs/text/text.component';
   imports: [CommonModule, FormsModule, RouterLink, TextComponent, ReactiveFormsModule],
   templateUrl: './login.component.html'
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
 
   loading = signal(false);
   error = signal('');
@@ -19,8 +19,6 @@ export class LoginComponent {
   constructor(private auth: AuthService, private router: Router, private fb: FormBuilder) {}
 
   ngOnInit(): void {
-    //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
-    //Add 'implements OnInit' to the class.
     this.loginForm = this.fb.group({
       email: ['',[Validators.required,Validators.email]],
       password: ['',[Validators.required,Validators.minLength(6)]],

@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { tap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
-import { AuthResponse, Role } from '../models/user.model';
+import { AuthResponse, LoginRequest, RegisterCompleteRequest, RegisterRequest } from '../models/user.model';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -18,14 +18,19 @@ export class AuthService {
 
   constructor(private http: HttpClient, private router: Router) {}
 
-  login(formLogin:any): Observable<AuthResponse> {
+  login(formLogin: LoginRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.API}/login`, formLogin).pipe(
       tap(res => this.setUser(res))
     );
   }
 
-  register(data:any): Observable<AuthResponse> {
+  register(data: RegisterRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.API}/register`, data).pipe(
+      tap(res => this.setUser(res))
+    );
+  }
+  registerComplete(data: RegisterCompleteRequest): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.API}/register-complete`, data).pipe(
       tap(res => this.setUser(res))
     );
   }
@@ -57,7 +62,7 @@ export class AuthService {
     localStorage.removeItem('auth');
   }
 
-  public loadFromStorage(): AuthResponse | null {
+  private loadFromStorage(): AuthResponse | null {
     const stored = localStorage.getItem('auth');
     return stored ? JSON.parse(stored) : null;
   }

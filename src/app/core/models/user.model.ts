@@ -11,13 +11,38 @@ export interface User {
 }
 
 export interface Ville{
-  id?: number;
-  name?: string;
+  id: number;
+  name: string;
 }
 
 export interface Pays{
   id?: number;
   name?: string;
+}
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface RegisterRequest {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  phone: string;
+  role: Role;
+}
+
+export interface RegisterCompleteRequest {
+  shopName: string;
+  adresse: string;
+  ville: string;
+  villeId: number;
+  fix?: string;
+  latitude?: string;
+  longitude?: string;
+  userId: number;
 }
 
 export interface AuthResponse {

@@ -6,10 +6,12 @@
     inputClass="input-field"
     placeholder="">
 </app-text>
-<div *ngIf="villes.length">
-
-    <div *ngFor="let ville of villes" (click)="selectVille(ville)" style="cursor:pointer; padding:5px;">
+@if (villes.length){
+<div >
+    @for (ville of villes; track ville.id) {
+    <div  (click)="selectVille(ville)" style="cursor:pointer; padding:5px;">
         {{ ville.name }}
     </div>
-
+    }
 </div>
+}
