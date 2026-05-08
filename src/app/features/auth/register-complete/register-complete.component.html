@@ -1,0 +1,54 @@
+<div class="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-8">
+      <div class="max-w-md w-full">
+        <div class="card">
+          <h1 class="text-2xl font-bold text-center text-gray-800 mb-2">✂️ BarberQ</h1>
+          <h2 class="text-xl font-semibold text-gray-700 mb-6 text-center">Créer un compte</h2>
+
+          <!-- Role selector -->
+         
+{{currentUser|json}}
+          <form (ngSubmit)="register()" [formGroup]="centrUserForm" class="space-y-4">
+            
+            <app-text
+                controlName="shopName"
+                label="Nom de salon"
+                name="shopName"
+                type="text"
+                inputClass="input-field"
+                placeholder="">
+            </app-text>
+          
+            <app-text
+                controlName="adresse"
+                label="Adresse"
+                name="adresse"
+                type="text"
+                inputClass="input-field"
+                placeholder="">
+            </app-text>
+            <app-ville-autocomplete controlName="ville"></app-ville-autocomplete>
+            <app-text
+                controlName="fix"
+                label="Fix"
+                name="fix"
+                type="tel"
+                inputClass="input-field"
+                placeholder="+212500000000">
+            </app-text>
+            
+            
+
+            @if (error()) {
+              <div class="bg-red-50 text-red-700 p-3 rounded-lg text-sm">{{ error() }}</div>
+            }
+
+            <button type="submit" [disabled]="loading()"
+                    class="btn-primary w-full disabled:opacity-50">
+              {{ loading() ? 'Inscription...' : 'Créer mon centre' }}
+            </button>
+          </form>
+
+          
+        </div>
+      </div>
+    </div>

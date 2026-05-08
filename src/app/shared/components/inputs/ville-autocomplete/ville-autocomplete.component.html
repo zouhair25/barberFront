@@ -1,0 +1,15 @@
+<app-text
+    [controlName]="controlName"
+    label="Ville"
+    [name]="controlName"
+    type="text"
+    inputClass="input-field"
+    placeholder="">
+</app-text>
+<div *ngIf="villes.length">
+
+    <div *ngFor="let ville of villes" (click)="selectVille(ville)" style="cursor:pointer; padding:5px;">
+        {{ ville.name }}
+    </div>
+
+</div>

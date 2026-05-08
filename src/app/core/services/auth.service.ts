@@ -18,8 +18,8 @@ export class AuthService {
 
   constructor(private http: HttpClient, private router: Router) {}
 
-  login(email: string, password: string): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.API}/login`, { email, password }).pipe(
+  login(formLogin:any): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.API}/login`, formLogin).pipe(
       tap(res => this.setUser(res))
     );
   }
@@ -57,7 +57,7 @@ export class AuthService {
     localStorage.removeItem('auth');
   }
 
-  private loadFromStorage(): AuthResponse | null {
+  public loadFromStorage(): AuthResponse | null {
     const stored = localStorage.getItem('auth');
     return stored ? JSON.parse(stored) : null;
   }

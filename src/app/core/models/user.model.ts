@@ -10,6 +10,16 @@ export interface User {
   profilePhoto?: string;
 }
 
+export interface Ville{
+  id?: number;
+  name?: string;
+}
+
+export interface Pays{
+  id?: number;
+  name?: string;
+}
+
 export interface AuthResponse {
   accessToken: string;
   refreshToken: string;

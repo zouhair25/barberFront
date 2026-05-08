@@ -1,63 +1,38 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink, Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { TextComponent } from '@shared/components/inputs/text/text.component';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
-  template: `
-    <div class="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div class="max-w-md w-full">
-        <div class="card">
-          <h1 class="text-2xl font-bold text-center text-gray-800 mb-6">✂️ BarberQ</h1>
-          <h2 class="text-xl font-semibold text-gray-700 mb-6 text-center">Connexion</h2>
-
-          <form (ngSubmit)="login()" #form="ngForm" class="space-y-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-              <input type="email" [(ngModel)]="email" name="email" required
-                     class="input-field" placeholder="votre@email.com">
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Mot de passe</label>
-              <input type="password" [(ngModel)]="password" name="password" required
-                     class="input-field" placeholder="••••••••">
-            </div>
-
-            @if (error()) {
-              <div class="bg-red-50 text-red-700 p-3 rounded-lg text-sm">{{ error() }}</div>
-            }
-
-            <button type="submit" [disabled]="loading() || !form.valid"
-                    class="btn-primary w-full text-center disabled:opacity-50">
-              {{ loading() ? 'Connexion...' : 'Se connecter' }}
-            </button>
-          </form>
-
-          <p class="text-center text-gray-500 text-sm mt-4">
-            Pas encore de compte?
-            <a routerLink="/auth/register" class="text-indigo-600 hover:underline font-medium">S'inscrire</a>
-          </p>
-        </div>
-      </div>
-    </div>
-  `
+  imports: [CommonModule, FormsModule, RouterLink, TextComponent, ReactiveFormsModule],
+  templateUrl: './login.component.html'
 })
 export class LoginComponent {
-  email = '';
-  password = '';
+
   loading = signal(false);
   error = signal('');
+  loginForm! : FormGroup;
+  constructor(private auth: AuthService, private router: Router, private fb: FormBuilder) {}
 
-  constructor(private auth: AuthService, private router: Router) {}
+  ngOnInit(): void {
+    //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
+    //Add 'implements OnInit' to the class.
+    this.loginForm = this.fb.group({
+      email: ['',[Validators.required,Validators.email]],
+      password: ['',[Validators.required,Validators.minLength(6)]],
+     
+    })
+  }
 
   login() {
     this.loading.set(true);
     this.error.set('');
-    this.auth.login(this.email, this.password).subscribe({
+
+    this.auth.login(this.loginForm.value).subscribe({
       next: res => {
         this.loading.set(false);
         if (res.role === 'BARBER') this.router.navigate(['/barber/dashboard']);
