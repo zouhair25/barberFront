@@ -42,7 +42,7 @@ export class BarberDetailComponent implements OnInit {
 
   ngOnInit() {
     const id = Number(this.route.snapshot.paramMap.get('id'));
-    this.barberApi.getBarber(id).subscribe(b => this.barber.set(b));
+    this.barberApi.getBarber(4).subscribe(b => this.barber.set(b));
     this.selectedDate.set(this.next7Days[0]);
   }
 

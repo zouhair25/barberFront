@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Appointment, BookAppointmentRequest, QueuePosition } from '../models/appointment.model';
+import { Appointment, BarberBookRequest, BookAppointmentRequest, QueuePosition } from '../models/appointment.model';
 
 interface Page<T> { content: T[]; totalElements: number; totalPages: number; number: number; }
 
@@ -33,11 +33,17 @@ export class AppointmentApiService {
     const params: any = {};
     if (from) params['from'] = from;
     if (to) params['to'] = to;
+
+    console.log('xxxx',params)
     return this.http.get<Appointment[]>(`${this.API}/barber/appointments`, { params });
   }
 
   getTodayQueue(): Observable<Appointment[]> {
     return this.http.get<Appointment[]>(`${this.API}/barber/appointments/today`);
+  }
+
+  barberBook(req: BarberBookRequest): Observable<Appointment> {
+    return this.http.post<Appointment>(`${this.API}/barber/appointments`, req);
   }
 
   updateStatus(id: number, status: string): Observable<Appointment> {

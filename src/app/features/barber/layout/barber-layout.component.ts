@@ -53,5 +53,6 @@ export class BarberLayoutComponent {
     { label: 'Commandes',       icon: '🚚', path: 'orders' },
     { label: 'Avis',            icon: '⭐', path: 'reviews' },
     { label: 'Statistiques',    icon: '📈', path: 'statistics' },
+    { label: 'Paramétrage',     icon: '⚙️', path: 'parametrages' },
   ];
 }

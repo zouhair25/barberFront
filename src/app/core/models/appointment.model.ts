@@ -1,9 +1,11 @@
+import { UserCentreSoin } from "./user-centre-soin.model";
+import { User } from "./user.model";
+
 export type AppointmentStatus = 'PENDING' | 'CONFIRMED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED' | 'NO_SHOW';
 
 export interface Appointment {
   id: number;
-  barber: { id: number; shopName: string };
-  client: { id: number; firstName: string; lastName: string; phone?: string };
+  client: User;
   service: { id: number; name: string; price: number; durationMin: number };
   startTime: string;
   endTime: string;
@@ -11,6 +13,7 @@ export interface Appointment {
   queuePosition?: number;
   notes?: string;
   createdAt: string;
+  userCentreSoin: UserCentreSoin;
 }
 
 export interface QueuePosition {
@@ -23,6 +26,13 @@ export interface QueuePosition {
 
 export interface BookAppointmentRequest {
   userCentreSoinId: number;
+  serviceId: number;
+  startTime: string;
+  notes?: string;
+}
+
+export interface BarberBookRequest {
+  clientId: number;
   serviceId: number;
   startTime: string;
   notes?: string;

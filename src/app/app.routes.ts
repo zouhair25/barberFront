@@ -18,7 +18,7 @@ export const routes: Routes = [
   },
   {
     path: 'barber',
-    canActivate: [barberGuard],
+    canActivate: [],//barberGuard
     loadChildren: () => import('./features/barber/barber.routes').then(m => m.barberRoutes)
   },
   { path: '**', redirectTo: '' }

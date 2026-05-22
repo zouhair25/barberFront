@@ -1,0 +1,48 @@
+
+    <div class="max-w-3xl mx-auto px-4 py-8">
+      <h1 class="text-2xl font-bold text-gray-800 mb-6">Mes Rendez-vous</h1>
+
+      @if (appointments().length === 0 && !loading()) {
+        <div class="card text-center py-12 text-gray-500">
+          <p class="text-5xl mb-4">📅</p>
+          <p>Vous n'avez pas encore de rendez-vous.</p>
+        </div>
+      }
+
+      <div class="space-y-4">
+        @for (apt of appointments(); track apt.id) {
+          <div class="card">
+            <div class="flex justify-between items-start">
+              <div>
+                <div class="font-bold text-lg">{{ apt?.userCentreSoin?.centreSoin?.shopName }}</div>
+                <div class="text-gray-600">{{ apt?.service?.name }} — {{ apt?.service?.price | currency:'MAD ':'symbol' }}</div>
+                <div class="text-gray-500 text-sm mt-1">
+                  📅 {{ apt?.startTime | date:'EEEE dd MMM yyyy à HH:mm':'':'fr' }}
+                </div>
+              </div>
+              <span [class]="statusClass(apt.status)" class="text-xs px-3 py-1 rounded-full font-medium">
+                {{ statusLabel(apt.status) }}
+              </span>
+            </div>
+
+            @if (apt.status === 'PENDING' || apt.status === 'CONFIRMED') {
+              <div class="mt-3 flex gap-3">
+                <button (click)="loadQueue(apt)" class="text-indigo-600 text-sm hover:underline">
+                  Voir ma position
+                </button>
+                <button (click)="cancel(apt.id)" class="text-red-500 text-sm hover:underline">
+                  Annuler
+                </button>
+              </div>
+            }
+
+            @if (queueInfo().get(apt.id); as q) {
+              <div class="mt-3 bg-blue-50 text-blue-700 rounded-lg p-3 text-sm">
+                Position <strong>{{ q.queuePosition }}</strong> — <strong>{{ q.peopleAhead }}</strong> personne(s) avant vous
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+ 

@@ -16,7 +16,7 @@ import { ControlContainer, ReactiveFormsModule } from '@angular/forms';
 export class TextComponent {
   @Input() controlName!: string;
   @Input() label!: string;
-  @Input() type!: string;
+  @Input() type = 'text';
   @Input() inputClass!: string;
   @Input() placeholder!: string;
   @Input() name!: string;

@@ -2,6 +2,10 @@ import { Routes } from '@angular/router';
 
 export const barberRoutes: Routes = [
   {
+    path: 'register-complete',
+    loadComponent: () => import('../auth/register-complete/register-complete.component').then(m => m.RegisterCompleteComponent)
+  },
+  {
     path: '',
     loadComponent: () => import('./layout/barber-layout.component').then(m => m.BarberLayoutComponent),
     children: [
@@ -16,6 +20,7 @@ export const barberRoutes: Routes = [
       { path: 'orders', loadComponent: () => import('./orders/orders.component').then(m => m.OrdersComponent) },
       { path: 'reviews', loadComponent: () => import('./reviews/reviews.component').then(m => m.ReviewsComponent) },
       { path: 'statistics', loadComponent: () => import('./statistics/statistics.component').then(m => m.StatisticsComponent) },
+      { path: 'parametrages', loadChildren: () => import('./parametrages/parametrages.routes').then(m => m.parametragesRoutes) },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
     ]
   }

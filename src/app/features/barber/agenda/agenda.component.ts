@@ -1,82 +1,41 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { FullCalendarModule } from '@fullcalendar/angular';
-import { CalendarOptions, EventClickArg } from '@fullcalendar/core';
+import { FullCalendarModule, FullCalendarComponent } from '@fullcalendar/angular';
+import { CalendarOptions, EventClickArg, EventSourceFuncArg } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import frLocale from '@fullcalendar/core/locales/fr';
 import { AppointmentApiService } from '../../../core/services/appointment-api.service';
-import { Appointment } from '../../../core/models/appointment.model';
+import { BarberApiService } from '../../../core/services/barber-api.service';
+import { UserCentreSoinApiService } from '../../../core/services/user-centre-soin-api.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { Appointment, BarberBookRequest } from '../../../core/models/appointment.model';
+import { BarberServicePublic } from '../../../core/models/barber.model';
+import { UserCentreSoin } from '../../../core/models/user-centre-soin.model';
 
 @Component({
   selector: 'app-agenda',
   standalone: true,
-  imports: [CommonModule, FullCalendarModule, RouterLink],
-  template: `
-    <div>
-      <div class="flex justify-between items-center mb-6">
-        <h1 class="text-2xl font-bold text-gray-800">Agenda</h1>
-        <a routerLink="/barber/checkout" class="btn-primary">+ Encaisser un RDV</a>
-      </div>
-
-      <div class="card">
-        <full-calendar [options]="calendarOptions" />
-      </div>
-
-      <!-- Appointment detail modal -->
-      @if (selectedApt()) {
-        <div class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
-            <div class="flex justify-between items-start mb-4">
-              <h3 class="text-lg font-bold">Détail du RDV</h3>
-              <button (click)="selectedApt.set(null)" class="text-gray-400 hover:text-gray-600 text-xl">×</button>
-            </div>
-            <dl class="space-y-2 text-sm">
-              <div class="flex justify-between">
-                <dt class="text-gray-500">Client</dt>
-                <dd class="font-medium">{{ selectedApt()!.client.firstName }} {{ selectedApt()!.client.lastName }}</dd>
-              </div>
-              <div class="flex justify-between">
-                <dt class="text-gray-500">Service</dt>
-                <dd class="font-medium">{{ selectedApt()!.service.name }}</dd>
-              </div>
-              <div class="flex justify-between">
-                <dt class="text-gray-500">Prix</dt>
-                <dd class="font-medium text-indigo-600">{{ selectedApt()!.service.price }} MAD</dd>
-              </div>
-              <div class="flex justify-between">
-                <dt class="text-gray-500">Heure</dt>
-                <dd class="font-medium">{{ selectedApt()!.startTime | date:'HH:mm' }} - {{ selectedApt()!.endTime | date:'HH:mm' }}</dd>
-              </div>
-              <div class="flex justify-between">
-                <dt class="text-gray-500">Statut</dt>
-                <dd><span [class]="statusClass(selectedApt()!.status)" class="text-xs px-2 py-1 rounded-full">{{ statusLabel(selectedApt()!.status) }}</span></dd>
-              </div>
-            </dl>
-            <div class="mt-5 flex gap-3">
-              @if (selectedApt()!.status === 'PENDING') {
-                <button (click)="changeStatus('CONFIRMED')" class="flex-1 btn-primary text-sm">Confirmer</button>
-                <button (click)="changeStatus('NO_SHOW')" class="flex-1 btn-danger text-sm">Absent</button>
-              }
-              @if (selectedApt()!.status === 'CONFIRMED') {
-                <button (click)="changeStatus('IN_PROGRESS')" class="flex-1 btn-primary text-sm">Commencer</button>
-              }
-              @if (selectedApt()!.status === 'IN_PROGRESS') {
-                <a [routerLink]="['/barber/checkout']" [queryParams]="{appointmentId: selectedApt()!.id}"
-                   class="flex-1 btn-primary text-sm text-center">Encaisser</a>
-              }
-            </div>
-          </div>
-        </div>
-      }
-    </div>
-  `
+  imports: [CommonModule, FormsModule, FullCalendarModule, RouterLink],
+  templateUrl: "./agenda.component.html"
 })
 export class AgendaComponent implements OnInit {
+  @ViewChild('calendar') calendarRef!: FullCalendarComponent;
+
   selectedApt = signal<Appointment | null>(null);
-  appointments: Appointment[] = [];
+  showNewAptModal = signal(false);
+
+  services: BarberServicePublic[] = [];
+  clients: UserCentreSoin[] = [];
+  clientFilter = '';
+  submitting = false;
+
+  newApt: { clientId: number | null; serviceId: number | null; date: string; time: string; notes: string } = {
+    clientId: null, serviceId: null, date: '', time: '', notes: ''
+  };
 
   calendarOptions: CalendarOptions = {
     plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
@@ -90,27 +49,82 @@ export class AgendaComponent implements OnInit {
     slotMinTime: '07:00:00',
     slotMaxTime: '22:00:00',
     allDaySlot: false,
-    events: [],
-    eventClick: (arg: EventClickArg) => this.onEventClick(arg),
-    height: 'auto'
-  };
-
-  constructor(private appointmentApi: AppointmentApiService) {}
-
-  ngOnInit() {
-    this.appointmentApi.getBarberAppointments().subscribe(apts => {
-      this.appointments = apts;
-      this.calendarOptions = {
-        ...this.calendarOptions,
-        events: apts.map(a => ({
+    events: (info: EventSourceFuncArg, successCallback, failureCallback) => {
+      console.log('ddd', info, info.start.toDateString());
+      this.appointmentApi.getBarberAppointments(
+        info.start.toISOString(),
+        info.end.toISOString()
+      ).subscribe({
+        next: apts => successCallback(apts.map(a => ({
           id: String(a.id),
           title: `${a.client.firstName} - ${a.service.name}`,
           start: a.startTime,
           end: a.endTime,
           color: this.statusColor(a.status),
           extendedProps: { appointment: a }
-        }))
-      };
+        }))),
+        error: err => failureCallback(err)
+      });
+    },
+    dateClick: (arg) => this.openNewAptModal(arg.date),
+    eventClick: (arg: EventClickArg) => this.onEventClick(arg),
+    height: 'auto'
+  };
+
+  constructor(
+    private appointmentApi: AppointmentApiService,
+    private barberApi: BarberApiService,
+    private userCentreSoinApi: UserCentreSoinApiService,
+    private authService: AuthService
+  ) {}
+
+  ngOnInit() {
+    const ucsId = this.authService.currentUser()?.userCentreSoinId;
+    if (ucsId) {
+      this.barberApi.getBarber(ucsId).subscribe(p => this.services = p.services ?? []);
+    }
+    this.userCentreSoinApi.list().subscribe(list => this.clients = list);
+  }
+
+  get filteredClients(): UserCentreSoin[] {
+    const f = this.clientFilter.toLowerCase().trim();
+    if (!f) return this.clients;
+    return this.clients.filter(c => {
+      const name = `${c.user?.firstName ?? ''} ${c.user?.lastName ?? ''}`.toLowerCase();
+      return name.includes(f) || (c.user?.email ?? '').toLowerCase().includes(f);
+    });
+  }
+
+  openNewAptModal(date?: Date) {
+    const d = date ?? new Date();
+    const pad = (n: number) => String(n).padStart(2, '0');
+    this.newApt = {
+      clientId: null,
+      serviceId: null,
+      date: `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`,
+      time: `${pad(d.getHours())}:${pad(d.getMinutes())}`,
+      notes: ''
+    };
+    this.clientFilter = '';
+    this.showNewAptModal.set(true);
+  }
+
+  submitNewApt() {
+    if (!this.newApt.clientId || !this.newApt.serviceId || !this.newApt.date || !this.newApt.time) return;
+    this.submitting = true;
+    const req: BarberBookRequest = {
+      clientId: this.newApt.clientId,
+      serviceId: this.newApt.serviceId,
+      startTime: `${this.newApt.date}T${this.newApt.time}:00`,
+      notes: this.newApt.notes || undefined
+    };
+    this.appointmentApi.barberBook(req).subscribe({
+      next: () => {
+        this.submitting = false;
+        this.showNewAptModal.set(false);
+        this.calendarRef.getApi().refetchEvents();
+      },
+      error: () => { this.submitting = false; }
     });
   }
 
@@ -123,7 +137,7 @@ export class AgendaComponent implements OnInit {
     if (!apt) return;
     this.appointmentApi.updateStatus(apt.id, status).subscribe(updated => {
       this.selectedApt.set(updated);
-      this.ngOnInit(); // refresh
+      this.calendarRef.getApi().refetchEvents();
     });
   }
 
@@ -146,7 +160,10 @@ export class AgendaComponent implements OnInit {
   }
 
   statusLabel(status: string): string {
-    const m: Record<string, string> = { PENDING: 'En attente', CONFIRMED: 'Confirmé', IN_PROGRESS: 'En cours', COMPLETED: 'Terminé', CANCELLED: 'Annulé', NO_SHOW: 'Absent' };
+    const m: Record<string, string> = {
+      PENDING: 'En attente', CONFIRMED: 'Confirmé', IN_PROGRESS: 'En cours',
+      COMPLETED: 'Terminé', CANCELLED: 'Annulé', NO_SHOW: 'Absent'
+    };
     return m[status] ?? status;
   }
 }

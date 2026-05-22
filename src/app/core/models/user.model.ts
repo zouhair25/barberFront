@@ -1,3 +1,5 @@
+import { UserCentreSoin } from "./user-centre-soin.model";
+
 export type Role = 'USER' | 'BARBER' | 'ADMIN';
 
 export interface User {
@@ -54,4 +56,5 @@ export interface AuthResponse {
   lastName: string;
   role: Role;
   userCentreSoinId?: number;
+  userCentreSoins?: UserCentreSoin[];
 }

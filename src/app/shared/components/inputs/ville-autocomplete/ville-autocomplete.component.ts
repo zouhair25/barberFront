@@ -1,4 +1,5 @@
-import { Component, Input, inject, OnInit } from '@angular/core';
+import { Component, DestroyRef, Input, inject, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { ControlContainer, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
@@ -24,6 +25,7 @@ export class VilleAutocompleteComponent implements OnInit {
 
   private controlContainer = inject(ControlContainer);
   private userApiService = inject(UserApiService);
+  private destroyRef = inject(DestroyRef);
 
   villes: Ville[] = [];
 
@@ -41,7 +43,8 @@ export class VilleAutocompleteComponent implements OnInit {
         switchMap((value: string) => {
           if (!value?.trim()) return of([]);
           return this.userApiService.searchVilles(value);
-        })
+        }),
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe((result: Ville[]) => {
         this.villes = result;

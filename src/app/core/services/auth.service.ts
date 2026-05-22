@@ -29,11 +29,7 @@ export class AuthService {
       tap(res => this.setUser(res))
     );
   }
-  registerComplete(data: RegisterCompleteRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.API}/register-complete`, data).pipe(
-      tap(res => this.setUser(res))
-    );
-  }
+
 
   logout(): void {
     this.http.post(`${this.API}/logout`, {}).subscribe();
