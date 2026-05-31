@@ -48,6 +48,7 @@ export class BarberLayoutComponent {
     { label: 'Services',        icon: '✂️', path: 'services' },
     { label: 'Produits',        icon: '🛒', path: 'products' },
     { label: 'Agenda',          icon: '📅', path: 'agenda' },
+    { label: 'Mes clients',     icon: '👥', path: 'clients' },
     { label: 'Encaissement',    icon: '💳', path: 'checkout' },
     { label: 'Stock',           icon: '📦', path: 'stock' },
     { label: 'Commandes',       icon: '🚚', path: 'orders' },

@@ -15,6 +15,7 @@ export const barberRoutes: Routes = [
       { path: 'services', loadComponent: () => import('./services-catalog/services-catalog.component').then(m => m.ServicesCatalogComponent) },
       { path: 'products', loadComponent: () => import('./products-catalog/products-catalog.component').then(m => m.ProductsCatalogComponent) },
       { path: 'agenda', loadComponent: () => import('./agenda/agenda.component').then(m => m.AgendaComponent) },
+      { path: 'clients', loadComponent: () => import('./clients/clients.component').then(m => m.ClientsComponent) },
       { path: 'checkout', loadComponent: () => import('./checkout/checkout.component').then(m => m.CheckoutComponent) },
       { path: 'stock', loadComponent: () => import('./stock/stock.component').then(m => m.StockComponent) },
       { path: 'orders', loadComponent: () => import('./orders/orders.component').then(m => m.OrdersComponent) },
